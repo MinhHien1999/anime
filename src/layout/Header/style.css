@@ -1,0 +1,13 @@
+.header-menu{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    list-style-type: none;
+    font-weight: bold;
+    min-height: 50px;
+    max-height: 50px;
+}
+.header-menu li a{
+    text-decoration: none;
+    color: black;
+}
