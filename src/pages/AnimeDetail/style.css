@@ -1,0 +1,124 @@
+p {
+    margin: 2px 0;
+}
+.anime-detail {
+    display: grid;
+    grid-template-columns: 0.15fr 0.75fr;
+    justify-content: center;
+    column-gap: 1.25rem;
+    padding-top: 20px;
+}
+
+.left-info {
+    display: grid;
+    grid-template-rows: repeat(1fr);
+    gap: 10px;
+}
+.right-info {
+    height: 100%;
+}
+.left-info-poster {
+    height: 250px;
+    width: 175px;
+}
+.left-info-score p {
+    margin: 2px;
+    text-align: center;
+    font-weight: 600;
+}
+.left-info-title span,.left-info-status span,.left-info-premiere span, .left-info-season span{
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.left-info-title p,.left-info-status p, .left-info-premiere p, .left-info-season p, .right-info-title p{
+    font-size: 0.75rem;
+}
+.right-info-title-box{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.right-info-mark{
+    display: flex;
+}
+.right-info-mark-btn{
+    cursor: pointer;
+}
+.right-info-title h3{
+    margin: 0;
+}
+.right-info-title p{
+    font-size: 1rem;
+    font-weight: 500;
+}
+.right-info-card {
+    padding: 15px;
+    background-color: #1f1f1f;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}.right-info-card-metadata{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 30px;
+}
+.right-info-card-metadata-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color:#a39191;
+    text-align: center;
+}
+.right-info-card-metadata_textContent{
+    text-align: center;
+    font-size: 0.75rem;
+}
+.right-info-card-description_textContent {
+    font-size: 0.85rem;
+    font-weight: 450;
+}
+.right-info-card-studios, .right-info-card-genres{
+    margin-top: 15px;
+    color: black;
+    font-weight: 600;
+}
+.right-info-card-genre, .right-info-card-studio{
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.right-info-card-studio p, .right-info-card-genre p {
+    padding: 5px;
+    background-color: #404040;
+    border-radius: 22px;
+    text-decoration: none;
+    font-size: 0.8rem;
+
+}
+.right-info-video {
+    display: grid;
+    grid-template-columns: 0.5fr;
+}
+.right-info-video-trailer {
+    display: flex;
+    justify-content: space-between;
+}
+.right-info-video-trailer_item {
+    display: flex;
+    flex-wrap: wrap;
+    width: 186px;
+}
+.right-info-video-trailer_item img {
+    width: 100%;
+}
+.right-info-relation {
+    height: 100%;
+    width: 100%;
+}
+.anime-relation-card {
+    margin: 10px auto;
+    text-decoration: none;
+}
+.anime-relation-card a{
+    text-decoration: none;
+}
