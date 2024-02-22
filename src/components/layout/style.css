@@ -1,0 +1,14 @@
+:root {
+    --text-color: white;
+    --background-color: #121212;
+    --modal-background-color: rgba(10,10,10,0.8);
+    --modal-card-color: #1e1e1e;
+    --card-color: #1e1e1e;
+}
+html {
+    background-color: var(--background-color);
+}
+.text {
+    color: var(--text-color);
+    font-weight: 600;
+}

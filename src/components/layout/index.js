@@ -1,4 +1,5 @@
 import Header from './Header'
+import './style.css';
 
 function Layout({children}){
     return (

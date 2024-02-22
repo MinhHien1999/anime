@@ -3,6 +3,7 @@ import {SET_PREVIOUS, SET_NEXT, LOAD_MORE_DATA, SET_FILTER, INIT_SEASON} from ".
 import reducerAnimes from "./reducer"
 import axios from "axios"
 import "./style.css"
+import { Link } from "react-router-dom"
 
 function AnimeCard() {
   const initIndexSeason = () => {
@@ -29,21 +30,6 @@ function AnimeCard() {
     }
     getSeasons()
   }, [])
-  const filterDuplicate = (dataAnimes) => {
-    let data = []
-     dataAnimes.reduce(
-      (previousValue, currentValue, index) => {
-        if(previousValue === undefined) {
-          data.push(currentValue)
-        }
-        if(previousValue.mal_id !== currentValue.mal_id){
-          data.push(currentValue)
-        }
-        return currentValue
-      }, 
-    0);
-    return data
-  }
   const getAnimes = async (year, season, type='',filter = 'tv', page = 1) => {
     const LIMIT = 21
     let URL = `https://api.jikan.moe/v4/seasons/${year}/${season}?limit=${LIMIT}&page=${page}&filter=${filter}&sfw=true`
@@ -54,7 +40,7 @@ function AnimeCard() {
       const response = await axios.get(URL)
       const dataAnimes = response.data.data
       const TOTAL_PAGES = response.data.pagination.last_visible_page
-      const data = filterDuplicate(dataAnimes)
+      const data = dataAnimes
       dispatchAnimes({
         type: type,
         payload: {
@@ -67,7 +53,12 @@ function AnimeCard() {
           },
       })
     } catch (error) {
-      throw new Error(`connection error: ${error.message}`)
+      if(error.response.status === 429){
+        console.log("Too Many Requests");
+      if(error.response.status === 400){
+        console.log("Not Found");
+      }
+    }
     }
 
   }
@@ -123,11 +114,11 @@ function AnimeCard() {
         <div className="header-box">
           <div className="header-box-navigation-button -previous">
             <i onClick={handleSeasonPrevious}>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="svg-icon" width="2em" height="2em"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#95ccff" viewBox="0 0 24 24" className="svg-icon" width="2em" height="2em"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>
             </i>
           </div>
           <div className="header-box-content">
-            <div className="page-header-box__sub-title">        
+            <div className="page-header-box__sub-title text">        
             {
                 season === 'winter' ? `January ${year}–March ${year}` :
                 season === 'spring' ? `April ${year}–June ${year}` :
@@ -135,29 +126,29 @@ function AnimeCard() {
                 `October ${year}–December ${year}`
             }
             </div>
-            <h1>
+            <h1 className="text">
               {season.charAt(0).toUpperCase() + season.slice(1) + ' '+ year + ' Anime'}
             </h1>
           </div>
           <div className="header-box-navigation-button -next">
-            <i className="bi bi-arrow-right" onClick={handleSeasonNext}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="svg-icon" width="2em" height="2em"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
+            <i onClick={handleSeasonNext}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#95ccff" className="svg-icon" width="2em" height="2em"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
             </i>
           </div>
         </div>
         <nav>
           <ul className="ul-tabs">
             <li className={`li-tab ${currentFilter.current === SET_FILTER.tv && 'active' }`}>
-                <p onClick={() => handleFilter(SET_FILTER.tv) }>Television</p>
+                <p className={`${currentFilter.current === SET_FILTER.tv ? 'active' : 'unactive' }`} onClick={() => handleFilter(SET_FILTER.tv) }>Television</p>
             </li>
             <li className={`li-tab ${currentFilter.current === SET_FILTER.movie && 'active' }`}>
-              <p onClick={() => handleFilter(SET_FILTER.movie) }>Movies</p>
+              <p className={`${currentFilter.current === SET_FILTER.movie ? 'active' : 'unactive' }`} onClick={() => handleFilter(SET_FILTER.movie) }>Movies</p>
             </li>
             <li className={`li-tab ${currentFilter.current === SET_FILTER.ova && 'active' }`}>
-              <p onClick={() => handleFilter(SET_FILTER.ova) }>OVAs</p>
+              <p className={`${currentFilter.current === SET_FILTER.ova ? 'active' : 'unactive' }`} onClick={() => handleFilter(SET_FILTER.ova) }>OVAs</p>
             </li>
             <li className={`li-tab ${currentFilter.current === 'all' && 'active' }`}>
-              <p onClick={() => handleFilter("all") }>All</p>
+              <p className={`${currentFilter.current === SET_FILTER.all ? 'active' : 'unactive' }`} onClick={() => handleFilter("all") }>All</p>
             </li>
           </ul>
         </nav>
@@ -174,11 +165,11 @@ function AnimeCard() {
             .map((anime, index) => (
               <div className="anime-card" key={index}>
                 <h3 className="anime-card_title">
-                  <a href="google.com">{anime.title}</a>
+                  <Link className="text" to={`anime/${anime.mal_id}`}>{anime.title}</Link>
                 </h3>
                 <ol className="anime-card_tags">
                   {anime.genres.map((genre, index) => (
-                    <li className="anime-card_tag" key={genre.name}>
+                    <li className="anime-card_tag text" key={genre.name}>
                       {genre.name}
                     </li>
                   ))}
@@ -187,18 +178,18 @@ function AnimeCard() {
                   <div className="anime-card-poster">
                     <img
                       className="anime-card-poster_image"
-                      src={anime.images.jpg.image_url}
+                      src={anime.images.webp.image_url}
                       alt=""
                     />
                   </div>
 
-                  <div className="anime-card-info">
+                  <div className="anime-card-info text">
                     {anime.studios.length === 0 ? (
                       "TBA"
                     ) : anime.studios.length === 1 ? (
                       <div className="anime-card-info_studios">
                         {anime.studios.map((studio, index) => (
-                          <span className="anime-card-info_studio" key={index}>
+                          <span className="anime-card-info_studio text" key={index}>
                             {studio.name}
                           </span>
                         ))}
@@ -206,7 +197,7 @@ function AnimeCard() {
                     ) : (
                       <ul className="anime-card-info_studios">
                         {anime.studios.map((studio, index) => (
-                          <li className="anime-card-info_studio" key={index}>
+                          <li className="anime-card-info_studio text" key={index}>
                             {studio.name}
                           </li>
                         ))}
@@ -222,17 +213,17 @@ function AnimeCard() {
                         (anime.broadcast.time ? anime.broadcast.time : "") +
                         (anime.broadcast.time ? " (JST)" : "")}
                       <div className="anime-card-info-metadata">
-                        <div className="anime-card-info-metadata_source">
+                        <div className="anime-card-info-metadata_source text">
                           {anime.source}
                         </div>
-                        <div className="anime-card-info-metadata_episodes">
+                        <div className="anime-card-info-metadata_episodes text">
                           {anime.episodes
-                            ? anime.episodes + " ep x " + anime.duration
+                            ? anime.episodes + " ep x " + anime.duration.replace(" per ep", "")
                             : "?"}
                         </div>
                       </div>
                     </div>
-                    <div className="anime-card-info_synopsis">
+                    <div className="anime-card-info_synopsis text">
                       <p>{anime.synopsis}</p>
                     </div>
                   </div>

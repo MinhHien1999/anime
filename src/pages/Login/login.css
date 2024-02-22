@@ -1,0 +1,35 @@
+.logo {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+.login-card{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.login-form {
+    width: 30%;
+    height: 100%;
+    background-color: brown
+    /* background-color: var(--card-color) */
+}
+.login-form-field {
+    margin: 5px 0;
+    padding: 0 10px;
+}
+.login-form-field input {
+    width: 90%;
+}
+.login-form-action {
+    margin: 5px 0;
+}
+.login-form-username label, .login-form-email label,.login-form-password label {
+    display: block;
+    margin: 3px 0;
+}
+.modal-card-action {
+    margin: 20px 10px;
+    float: right;
+    padding: auto 10px;
+}

@@ -1,0 +1,34 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    background-color: #1f1f1f;
+    position: sticky;
+    top: 0;
+    width: 100%;
+}
+.header-menu-left{
+    display: inline-flex;
+    gap: 10px;
+    list-style-type: none;
+    font-weight: bold;
+    /* display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    min-height: 50px;
+    max-height: 50px; */
+}
+.header-menu-right {
+    display: inline-flex;
+    gap: 10px;
+    list-style-type: none;
+    font-weight: bold;
+    padding-left: 0;
+    padding-right: 40px;
+}
+.header-menu-left li a, .header-menu-right li a{
+    text-decoration: none;
+
+}
+html {
+    box-sizing: border-box;
+}
