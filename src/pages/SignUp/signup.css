@@ -3,30 +3,33 @@
     justify-content: center;
     height: 100%;
 }
-.login-title {
+.signup-title {
     display: flex;
     flex-direction:column;
     align-items: center;
     justify-content: center;
 }
-.login-card{
+.text-success{
+    margin: 5px 0;
+}
+.signup-card{
     width: 100%;
     display: flex;
     justify-content: center;
 }
-.login-form {
+.signup-form {
     width: 30%;
     height: 100%;
     background-color: var(--card-color);
 }
-.login-form-field {
+.signup-form-field {
     margin: 5px 0;
     padding: 0 10px;
 }
-.login-form-field input {
+.signup-form-field input {
     width: 90%;
 }
-.login-form-action {
+.signup-form-action {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -36,7 +39,7 @@
 .button-submit {
     padding: 10px;
 }
-.login-form-username label, .login-form-email label,.login-form-password label {
+.signup-form-username label, .signup-form-email label,.signup-form-password label {
     display: block;
     margin: 3px 0;
 }

@@ -4,6 +4,7 @@
     --modal-background-color: rgba(10,10,10,0.8);
     --modal-card-color: #1e1e1e;
     --card-color: #1e1e1e;
+    --text-error-color: #e14747;
 }
 html {
     background-color: var(--background-color);
@@ -11,4 +12,25 @@ html {
 .text {
     color: var(--text-color);
     font-weight: 600;
+}
+.hidden {
+    visibility: hidden;
+}
+.text-error {
+    color: var(--text-error-color);
+    font-weight: bold;
+}
+.watching {
+    background-color: #6ce871;
+}
+.completed {
+    background-color: #6ad0f4;
+}
+.planning{
+    background-color: #ae3aaa;
+}
+.dropped{
+    background-color: #1b1a1a;
+    opacity: 0.4;
+    color: var(--text-color);
 }

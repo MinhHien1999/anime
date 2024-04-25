@@ -1,0 +1,59 @@
+.anime-library-filter {
+    width: 100%;
+    height: 35px;
+    padding: 5px 16px;
+}
+.anime-library-filter select {
+    height: 80%;
+}
+.anime-filter-btn{
+    height: 80%;
+}
+.anime-library{
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+.anime-item{
+    height: 100%;
+    display: grid;
+    grid-template-columns: 40% 60%;
+    border-radius: 10px;
+}
+.anime-item-left{
+    border-radius: 10px 0 0 10px;
+}
+.anime-item-right{
+    padding: 0 5px;
+    display: grid;
+    grid-template-rows: max-content;
+    position: relative;
+}
+.anime-item-right .mark-btn{
+    border-radius: 5px;
+    cursor: pointer;
+    position: absolute;
+    top: -5px;
+    left: 92%; 
+}
+.anime-image{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px 0 0 10px;
+}
+.anime-item-right a{
+    text-decoration: none;
+}
+.anime-item-right .anime-library-text{
+    font-size: 0.75rem;
+    color: black;
+}
+.anime-item-right .anime-library-text_episode{
+    font-size: 0.75rem;
+    color: #eff3f7;
+}
+.dropped :hover{
+    color: var(--text-color);
+    color :color #eff3f7;
+}

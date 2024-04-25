@@ -1,18 +1,22 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import NotFound from "../../components/NotFound";
 import Modal from "../../components/Modal";
 import "./style.css";
+import Cookies from "js-cookie";
+import { useAuth } from "../../context/authProvider";
 
 function AnimeDetail() {
   const { animeId } = useParams();
   const [anime, setAnime] = useState([]);
   const [error, setError] = useState(false);
   const [activeModal, setModal] = useState(false);
+  const { USER_NAME_TOKEN } = useAuth();
   const [animeRelations, setAnimeRelations] = useState([]);
+  const user = Cookies.get(USER_NAME_TOKEN);
   const getAnimeDetail = async (animeId) => {
-    let URL = `https://api.jikan.moe/v4/anime/${animeId}`;
+    let URL = `${process.env.REACT_APP_JIKAN_API_GET_ANIME_BY_ID}/${animeId}`;
     try {
       const response = await axios.get(URL);
       setAnime(response.data);
@@ -86,17 +90,19 @@ function AnimeDetail() {
                   anime.data.aired.prop.from.year}
               </p>
             </div>
-            <div className="left-info-season">
-              <span className="text">Season</span>
-              <p className="text">
-                {anime.data.season
-                  ? anime.data.season.charAt(0).toUpperCase() +
+            {anime.data.season ? (
+              <div className="left-info-season">
+                <span className="text">Season</span>
+                <p className="text">
+                  {anime.data.season.charAt(0).toUpperCase() +
                     anime.data.season.slice(1) +
                     " " +
-                    anime.data.year
-                  : "TBA"}
-              </p>
-            </div>
+                    anime.data.year}
+                </p>
+              </div>
+            ) : (
+              <Fragment />
+            )}
           </div>
           <div className="right-info">
             <div className="right-info-title-box">
@@ -104,11 +110,15 @@ function AnimeDetail() {
                 <h3 className="text">{anime.data.title}</h3>
                 <p className="text">{anime.data.title_english}</p>
               </div>
-              <div className="right-info-mark">
-                <button className="right-info-mark-btn" onClick={showModal}>
-                  abcd
-                </button>
-              </div>
+              {user ? (
+                <div className="right-info-mark">
+                  <button className="right-info-mark-btn" onClick={showModal}>
+                    abcd
+                  </button>
+                </div>
+              ) : (
+                <Fragment />
+              )}
             </div>
             <div className="right-info-card">
               <div className="right-info-card-metadata">
@@ -127,7 +137,7 @@ function AnimeDetail() {
                 <div className="right-info-card-metadata-episodes">
                   <p className="right-info-card-metadata-title">Episodes</p>
                   <p className="right-info-card-metadata_textContent text">
-                    {anime.data.episodes}
+                    {anime.data.episodes ? anime.data.episodes : "?"}
                   </p>
                 </div>
                 <div className="right-info-card-metadata-duration">
@@ -212,11 +222,13 @@ function AnimeDetail() {
                 </div>
                 {animeRelations.map((relation, index) =>
                   relation.entry.map((a) => (
-                    <div className="anime-relation-card" key={index}>
+                    <div
+                      className="anime-relation-card"
+                      key={`relation-${a.mal_id}`}
+                    >
                       <Link
                         className="text"
                         style={{ textAlign: "center", fontWeight: "400" }}
-                        key={`relation-${a.mal_id}`}
                         to={`/anime/${a.mal_id}`}
                       >
                         <p>{a.name}</p>
