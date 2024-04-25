@@ -1,6 +1,3 @@
-.hidden {
-    visibility: hidden;
-}
 .modal {
     position: fixed;
     top: 0;
@@ -77,6 +74,9 @@
     border: 0px;
     padding: 10px;
     font-size: 0.75rem;
+}
+button[disabled] {
+    cursor: default;
 }
 .button-submit {
     background-color: #95ccff;
