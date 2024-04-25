@@ -21,7 +21,7 @@ function Library() {
   const getAllLibrary = async () => {
     const URL =
       process.env.REACT_APP_API_GET_ALL_LIBRARY_USER ||
-      "http://localhost:3001/user/library";
+      `${process.env.REACT_APP_API_BASE_URL}/user/library`;
     const filter = animeFilter;
     try {
       const response = await axios.get(URL, {

@@ -22,7 +22,7 @@ function Modal({ anime, onClose }) {
   const anime_id = anime.mal_id || anime.anime_id;
   useEffect(() => {
     const getMark = async () => {
-      const URL = `http://localhost:3001/library/${user_id}/${anime_id}`;
+      const URL = `${process.env.REACT_APP_API_BASE_URL}/library/${user_id}/${anime_id}`;
       try {
         const response = await axios.get(URL);
         if (response.data.library !== null) {
@@ -75,13 +75,13 @@ function Modal({ anime, onClose }) {
   const handleDeleteMark = async (e) => {
     e.preventDefault();
     const library_id = values.library_id;
-    const URL = `http://localhost:3001/mark/${library_id}`;
+    const URL = `${process.env.REACT_APP_API_BASE_URL}/mark/${library_id}`;
     const animeEle = document.getElementById(`anime-${anime_id}`);
     try {
       const response = await axios.delete(URL);
       if (response.status === 200) {
         if (location.pathname === "/") {
-          animeEle.classList.remove(status.toLowerCase())
+          animeEle.classList.remove(status.toLowerCase());
         }
         showSwal(response.data.message);
       }

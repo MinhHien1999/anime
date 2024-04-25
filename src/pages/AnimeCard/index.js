@@ -37,7 +37,7 @@ function AnimeCard() {
     if (!user_id) return null;
     try {
       const response = await axios.get(
-        `http://localhost:3001/library/${user_id}`
+        `${process.env.REACT_APP_API_BASE_URL}/library/${user_id}`
       );
       lib = response.data.library;
       return lib;
