@@ -161,7 +161,6 @@ function AnimeCard() {
     }
     return "";
   };
-  console.log(animes)
   return (
     <>
       <div className="header-wrap">
