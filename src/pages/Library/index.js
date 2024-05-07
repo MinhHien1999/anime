@@ -34,8 +34,9 @@ function Library() {
       const user = response.data.username;
       setLibrary(library);
       setUserName(user);
-    } catch (error) {
-      if (error.response.status === 404) setError(true);
+    } catch (err) {
+      console.log(err);
+      if (err.response.status === 404) setError(true);
     }
   };
   const showModal = (anime) => {
@@ -50,15 +51,22 @@ function Library() {
   };
   useEffect(() => {
     getAllLibrary();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const copyText = () => {
+    const shareLink = `${process.env.REACT_APP_BASE_URL}/user/${userToken}/library`
+    navigator.clipboard.writeText(shareLink)
+  }
   if (error) return <NotFound />;
   return (
     <>
       {username && (
         <>
-          <div>
-            <h1 style={{padding: "0px 15px"}} className="text">{`${username}'s Anime List`}</h1>
+          <div style={{ padding: "0px 15px", display: "flex", justifyContent: "space-between" }}>
+            <h1 className="text">{`${username}'s Anime List`}</h1>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <button style={{ height: "3em", cursor: "pointer" }} onClick={copyText}>Share</button>
+            </div>
           </div>
           <div className="anime-library-filter">
             <select onChange={(e) => setAnimeFilter(e.target.value)}>
@@ -70,7 +78,7 @@ function Library() {
               ))}
             </select>
             <button className="anime-filter-btn" onClick={handleFilter}>
-              OK
+              Filter
             </button>
           </div>
         </>
@@ -79,7 +87,7 @@ function Library() {
         {library &&
           library.map((lib) => (
             <div
-              className={`anime-item text ${lib.status.toLowerCase()}`}
+              className={`anime-item ${lib.status.toLowerCase()} text`}
               key={`lib-${lib.anime_id}`}
               id={`lib-${lib.anime_id}`}
             >
@@ -103,6 +111,7 @@ function Library() {
                 {userToken && (
                   <div
                     className={`mark-btn ${lib.status.toLowerCase()}`}
+                    id={`anime-library-mark-${lib.anime_id}`}
                     onClick={() => showModal(lib)}
                   >
                     <svg

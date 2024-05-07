@@ -5,17 +5,13 @@
     position: sticky;
     top: 0;
     width: 100%;
+    z-index: 9999;
 }
 .header-menu-left{
     display: inline-flex;
     gap: 10px;
     list-style-type: none;
     font-weight: bold;
-    /* display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    min-height: 50px;
-    max-height: 50px; */
 }
 .header-menu-right {
     display: inline-flex;
