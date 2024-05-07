@@ -89,7 +89,7 @@ function AnimeCard() {
     } catch (error) {
       if (error.response.status === 429) {
         console.log("Too Many Requests");
-        if (error.response.status === 400) {
+        if (error.response.status === 404) {
           console.log("Not Found");
         }
       }
@@ -304,7 +304,7 @@ function AnimeCard() {
               >
                 <div className="anime-card_title">
                   <Link className="text" to={`anime/${anime.mal_id}`}>
-                    <p>{anime.title}</p>
+                    {anime.title}
                   </Link>
                 </div>
                 <ol className="anime-card_tags">
@@ -329,10 +329,7 @@ function AnimeCard() {
                     ) : anime.studios.length === 1 ? (
                       <div className="anime-card-info_studios">
                         {anime.studios.map((studio, index) => (
-                          <span
-                            className="anime-card-info_studio text"
-                            key={index}
-                          >
+                          <span className="anime-card-info_studio" key={index}>
                             {studio.name}
                           </span>
                         ))}
@@ -340,10 +337,7 @@ function AnimeCard() {
                     ) : (
                       <ul className="anime-card-info_studios">
                         {anime.studios.map((studio, index) => (
-                          <li
-                            className="anime-card-info_studio text"
-                            key={index}
-                          >
+                          <li className="anime-card-info_studio" key={index}>
                             {studio.name}
                           </li>
                         ))}
@@ -359,10 +353,10 @@ function AnimeCard() {
                         (anime.broadcast.time ? anime.broadcast.time : "") +
                         (anime.broadcast.time ? " (JST)" : "")}
                       <div className="anime-card-info-metadata">
-                        <div className="anime-card-info-metadata_source text">
+                        <div className="anime-card-info-metadata_source">
                           {anime.source}
                         </div>
-                        <div className="anime-card-info-metadata_episodes text">
+                        <div className="anime-card-info-metadata_episodes">
                           {anime.episodes
                             ? anime.episodes +
                               " ep x " +
@@ -373,7 +367,7 @@ function AnimeCard() {
                         </div>
                       </div>
                     </div>
-                    <div className="anime-card-info_synopsis text">
+                    <div className="anime-card-info_synopsis">
                       <p>{anime.synopsis}</p>
                     </div>
                   </div>
@@ -385,6 +379,7 @@ function AnimeCard() {
                         ? ""
                         : changeColor(anime.mal_id, animes.library)
                     }`}
+                    id={`anime-card-bookmark-${anime.mal_id}`}
                     onClick={() => showModal(anime)}
                   >
                     <svg

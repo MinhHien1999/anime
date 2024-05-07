@@ -5,7 +5,8 @@ import "./modal.css";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useLocation } from "react-router-dom";
-
+// import { ChangeLibraryItem, deleteLibraryItem, getMark } from "./handleModal";
+import * as handleModal from "./handleModal";
 const STATUS = ["Watching", "Completed", "Planning", "Dropped"];
 
 function Modal({ anime, onClose }) {
@@ -21,24 +22,12 @@ function Modal({ anime, onClose }) {
   const user_id = Cookies.get(process.env.REACT_APP_USER_TOKEN);
   const anime_id = anime.mal_id || anime.anime_id;
   useEffect(() => {
-    const getMark = async () => {
-      const URL = `${process.env.REACT_APP_API_BASE_URL}/library/${user_id}/${anime_id}`;
-      try {
-        const response = await axios.get(URL);
-        if (response.data.library !== null) {
-          const data = {
-            library_id: response.data.library._id,
-            status: response.data.library.status,
-            note: response.data.library.note,
-          };
-          setValues(data);
-          setStatus(data.status);
-        }
-      } catch (err) {
-        console.log(err);
+    handleModal.getMark(user_id, anime_id).then((library) => {
+      if (library) {
+        setValues(library);
+        setStatus(library.status);
       }
-    };
-    getMark();
+    });
   }, [user_id]);
   const handleSaveMark = async (e) => {
     e.preventDefault();
@@ -62,10 +51,7 @@ function Modal({ anime, onClose }) {
         credentials: "same-origin",
       });
       if (response.status === 200) {
-        if (location.pathname === "/") {
-          const animeEle = document.getElementById(`anime-${value.anime_id}`);
-          // animeEle.classList.remove()
-        }
+        handleModal.ChangeLibraryItem(location.pathname, value);
         showSwal(response.data.message);
       }
     } catch (err) {
@@ -76,13 +62,10 @@ function Modal({ anime, onClose }) {
     e.preventDefault();
     const library_id = values.library_id;
     const URL = `${process.env.REACT_APP_API_BASE_URL}/mark/${library_id}`;
-    const animeEle = document.getElementById(`anime-${anime_id}`);
     try {
       const response = await axios.delete(URL);
       if (response.status === 200) {
-        if (location.pathname === "/") {
-          animeEle.classList.remove(status.toLowerCase());
-        }
+        handleModal.deleteLibraryItem(location.pathname, anime_id, status);
         showSwal(response.data.message);
       }
     } catch (err) {

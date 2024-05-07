@@ -48,15 +48,10 @@ transform: rotate(135deg);
     color: #9f9f9f;
     cursor: pointer;
 }
-/* .li-tab p {
-    margin: 0;
-    color: #9f9f9f;
-    cursor: pointer;
-} */
 .anime {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 5px;
+    gap: 10px;
     padding: 20px;
 }
 .anime-card {
@@ -74,16 +69,21 @@ transform: rotate(135deg);
     border-radius: 5px;
     cursor: pointer;
     position: absolute;
-    top: -6px;
-    left: 96%; 
+    top: -5px;
+    left: 97%; 
 }
 .anime-card_title {
-    text-align: center;
-    margin-bottom: 10px;
-    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    font-size: 0.8rem;
+    text-overflow: ellipsis; /* Add ellipsis for truncated text */
 }
 .anime-card_title a {
     text-decoration: none;
+    padding: 0 10px;
 }
 .anime-card_tags {
     margin-top: 10px;
@@ -106,6 +106,7 @@ transform: rotate(135deg);
 .anime-card-info {
     display: flex;
     flex-flow: column;
+    height: 100%;
 }
 .anime-card-info_studios, .anime-card-info_synopsis, .anime-card-info_date{
     border-top: 1px dashed;
@@ -133,15 +134,9 @@ ul.anime-card-info_studios{
 .anime-card-info_synopsis {
     font-size: 0.75rem;
     text-align: left;
-    max-height: 180px;
-    overflow: scroll;
+    overflow: auto;
 }
 .anime-card-info_synopsis p {
     margin: 0;    
-    overflow: hidden;
-    /* overflow: scroll; */
-}
-.anime-card_title {
-    margin: 0;
-    font-size: 0.8rem;
+    max-height: 100%;
 }
