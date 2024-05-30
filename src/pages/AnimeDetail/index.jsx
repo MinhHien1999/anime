@@ -6,6 +6,7 @@ import Modal from "../../components/Modal";
 import "./style.css";
 import Cookies from "js-cookie";
 import { useAuth } from "../../context/authProvider";
+import jikanApi from "../../api/jikanApi";
 
 function AnimeDetail() {
   const { animeId } = useParams();
@@ -16,10 +17,9 @@ function AnimeDetail() {
   const [animeRelations, setAnimeRelations] = useState([]);
   const user = Cookies.get(USER_NAME_TOKEN);
   const getAnimeDetail = async (animeId) => {
-    let URL = `${process.env.REACT_APP_JIKAN_API_GET_ANIME_BY_ID}/${animeId}`;
     try {
-      const response = await axios.get(URL);
-      setAnime(response.data);
+      const anime = await jikanApi.getInfoAnimeById(animeId);
+      setAnime(anime);
     } catch (error) {
       console.error(
         `${error.response.status} | Anime ${error.response.statusText}`

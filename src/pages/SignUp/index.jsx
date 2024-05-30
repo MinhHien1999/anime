@@ -2,11 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import authApi from "../../api/authApi";
 import { validateSignUpForm } from "../../validation/validation";
 import "./signup.css";
-import axios from "axios";
-import { useAuth } from "../../context/authProvider";
-const SIGNUP_URL = process.env.REACT_APP_API_SIGNUP;
 
 function SignUp() {
   const navigate = useNavigate();
@@ -22,8 +20,8 @@ function SignUp() {
   };
   const handleSubmit = async (value) => {
     try {
-      const response = await axios.post(SIGNUP_URL, value);
-      showSwal(response.data.message);
+      const response = await authApi.signUp(value)
+      showSwal(response.message);
     } catch (err) {
       setErrors(err.response.data.message);
     }

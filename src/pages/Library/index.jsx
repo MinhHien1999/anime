@@ -1,11 +1,12 @@
-// import { useAuth } from "../../context/authProvider";
-import axios from "axios";
 import "./library.css";
 import Modal from "../../components/Modal";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Link, useParams } from "react-router-dom";
 import NotFound from "../../components/NotFound";
+import libraryApi from "../../api/libraryApi";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const LIBRARY_FILTER = ["Watching", "Completed", "Planning", "Dropped"];
 
@@ -19,23 +20,15 @@ function Library() {
   const [animeFilter, setAnimeFilter] = useState("");
   const userToken = Cookies.get(process.env.REACT_APP_USER_TOKEN);
   const getAllLibrary = async () => {
-    const URL =
-      process.env.REACT_APP_API_GET_ALL_LIBRARY_USER ||
-      `${process.env.REACT_APP_API_BASE_URL}/user/library`;
-    const filter = animeFilter;
     try {
-      const response = await axios.get(URL, {
-        params: {
-          user_id: userId || userToken,
-          filter,
-        },
-      });
-      const library = response.data.library;
-      const user = response.data.username;
+      const user_id = userId || userToken
+      const filter = animeFilter;
+      const response = await libraryApi.getAll(user_id, filter)
+      const library = response.library;
+      const user = response.username;
       setLibrary(library);
       setUserName(user);
     } catch (err) {
-      console.log(err);
       if (err.response.status === 404) setError(true);
     }
   };
@@ -56,7 +49,16 @@ function Library() {
   const copyText = () => {
     const shareLink = `${process.env.REACT_APP_BASE_URL}/user/${userToken}/library`
     navigator.clipboard.writeText(shareLink)
+    showSwal("Copied to Clipboard")
   }
+  const showSwal = (message) => {
+    withReactContent(Swal)
+      .fire({
+        title: message,
+        confirmButtonText: `OK`,
+        icon: "success",
+      })
+  };
   if (error) return <NotFound />;
   return (
     <>
@@ -108,6 +110,8 @@ function Library() {
                   {" "}
                   {`Total: ${lib.episode} EP`}
                 </p>
+                <p className="anime-library-text_format">Format: {lib.format}</p>
+
                 {userToken && (
                   <div
                     className={`mark-btn ${lib.status.toLowerCase()}`}

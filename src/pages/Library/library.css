@@ -26,8 +26,6 @@
 }
 .anime-item-right{
     padding: 0 5px;
-    display: grid;
-    grid-template-rows: max-content;
     position: relative;
 }
 .anime-item-right .mark-btn{
@@ -49,7 +47,7 @@
     font-size: 0.75rem;
     color: black;
 }
-.anime-item-right .anime-library-text_episode{
+.anime-item-right .anime-library-text_episode, .anime-library-text_format{
     font-size: 0.75rem;
     color: #eff3f7;
 }

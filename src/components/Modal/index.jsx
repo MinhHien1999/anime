@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "./modal.css";
-import axios from "axios";
 import Cookies from "js-cookie";
 import { useLocation } from "react-router-dom";
-// import { ChangeLibraryItem, deleteLibraryItem, getMark } from "./handleModal";
 import * as handleModal from "./handleModal";
+import libraryApi from "../../api/libraryApi";
 const STATUS = ["Watching", "Completed", "Planning", "Dropped"];
 
 function Modal({ anime, onClose }) {
+  console.log(anime.type);
   const location = useLocation();
   const [status, setStatus] = useState(STATUS[0]);
   const [note, setNote] = useState("");
@@ -25,10 +25,11 @@ function Modal({ anime, onClose }) {
     handleModal.getMark(user_id, anime_id).then((library) => {
       if (library) {
         setValues(library);
+        setNote(library.note);
         setStatus(library.status);
       }
     });
-  }, [user_id]);
+  }, [user_id,anime_id]);
   const handleSaveMark = async (e) => {
     e.preventDefault();
     const value = {
@@ -42,17 +43,13 @@ function Modal({ anime, onClose }) {
         typeof anime.episodes !== "number" || anime.episodes === null
           ? "?"
           : anime.episodes,
+      format: anime.type ?? 'TBA'
     };
-    const URL = process.env.REACT_APP_API_MARK;
     try {
-      const response = await axios.post(URL, value, {
-        headers: { authorization: `Bearer ${userTokenName}` },
-        withCredentials: true,
-        credentials: "same-origin",
-      });
+      const response = await libraryApi.saveBookMark(value, userTokenName)
       if (response.status === 200) {
         handleModal.ChangeLibraryItem(location.pathname, value);
-        showSwal(response.data.message);
+        showSwal(response.message);
       }
     } catch (err) {
       console.log(err);
@@ -61,12 +58,11 @@ function Modal({ anime, onClose }) {
   const handleDeleteMark = async (e) => {
     e.preventDefault();
     const library_id = values.library_id;
-    const URL = `${process.env.REACT_APP_API_BASE_URL}/mark/${library_id}`;
     try {
-      const response = await axios.delete(URL);
+      const response = await libraryApi.deleteBookMark(library_id)
       if (response.status === 200) {
         handleModal.deleteLibraryItem(location.pathname, anime_id, status);
-        showSwal(response.data.message);
+        showSwal(response.message);
       }
     } catch (err) {
       console.log(err);

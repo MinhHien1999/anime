@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect, useRef } from "react";
+import React, { useState, useReducer, useEffect, useRef } from "react";
 import {
   SET_PREVIOUS,
   SET_NEXT,
@@ -7,11 +7,12 @@ import {
   INIT_SEASON,
 } from "./constants";
 import reducerAnimes from "./reducer";
-import axios from "axios";
 import "./style.css";
 import Modal from "../../components/Modal";
 import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import jikanApi from "../../api/jikanApi";
+import libraryApi from "../../api/libraryApi";
 
 function AnimeCard() {
   const initIndexSeason = () => {
@@ -36,10 +37,8 @@ function AnimeCard() {
     let lib = [];
     if (!user_id) return null;
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/library/${user_id}`
-      );
-      lib = response.data.library;
+      const response = await libraryApi.getAll(user_id, {},"/")
+      lib = response.library;
       return lib;
     } catch (error) {
       console.log(error);
@@ -48,11 +47,14 @@ function AnimeCard() {
 
   useEffect(() => {
     const getSeasons = async () => {
-      const URL = process.env.REACT_APP_JIKAN_API_GET_SEASONS;
-      const response = await axios.get(URL);
-      const dataSeasons = response.data.data;
-      setSeasons(dataSeasons);
-      setYear(dataSeasons[0].year);
+      try {
+        const response = await jikanApi.getSeasons();
+        const dataSeasons = response.data
+        setSeasons(dataSeasons);
+        setYear(dataSeasons[0].year);
+      } catch (error) {
+        console.log(error);
+      }
     };
     getSeasons();
   }, []);
@@ -63,17 +65,11 @@ function AnimeCard() {
     filter = "tv",
     page = 1
   ) => {
-    const LIMIT = 21;
     const lib = await getAllLibrary();
-    let URL = `${process.env.REACT_APP_JIKAN_API_GET_ANIMES_BY_SEASONS}/${year}/${season}?limit=${LIMIT}&page=${page}&filter=${filter}&sfw=true`;
-    if (filter === "all") {
-      URL = `${process.env.REACT_APP_JIKAN_API_GET_ANIMES_BY_SEASONS}/${year}/${season}?limit=${LIMIT}&page=${page}&sfw=true`;
-    }
     try {
-      const response = await axios.get(URL);
-      const dataAnimes = await response.data.data;
-      const TOTAL_PAGES = await response.data.pagination.last_visible_page;
-      const data = dataAnimes;
+      const response = await jikanApi.getAnimes(year, season, page, filter)
+      const data = response.data;
+      const TOTAL_PAGES = response.pagination.last_visible_page;
       dispatchAnimes({
         type: type,
         payload: {

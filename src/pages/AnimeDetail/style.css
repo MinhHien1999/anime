@@ -3,7 +3,7 @@ p {
 }
 .anime-detail {
     display: grid;
-    grid-template-columns: 0.15fr 0.75fr;
+    grid-template-columns: 0.1fr 0.55fr;
     justify-content: center;
     column-gap: 1.25rem;
     padding-top: 20px;
@@ -12,12 +12,15 @@ p {
 .left-info {
     display: flex;
     flex-direction: column;
+    height: 250px;
+    width: 175px;
     gap: 10px;
 }
 .right-info {
     height: 100%;
 }
 .left-info-poster {
+    align-self: center;
     height: 250px;
     width: 175px;
 }

@@ -99,7 +99,8 @@ transform: rotate(135deg);
     border-right: 1px dashed;
 }
 .anime-card-poster, .anime-card-poster_image {
-    width: 177px;
+    border-radius: 5px;
+    /* width: 177px; */
     height: 100%;
     float: left;
 }
@@ -110,8 +111,6 @@ transform: rotate(135deg);
 }
 .anime-card-info_studios, .anime-card-info_synopsis, .anime-card-info_date{
     border-top: 1px dashed;
-    box-sizing: border-box;
-    width: 100%;
     font-size: 0.85rem;
 }
 ul.anime-card-info_studios{

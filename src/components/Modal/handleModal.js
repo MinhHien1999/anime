@@ -1,4 +1,4 @@
-import axios from "axios";
+import libraryApi from "../../api/libraryApi";
 
 export function ChangeLibraryItem(locationPath, value) {
   switch (locationPath) {
@@ -59,15 +59,14 @@ export function deleteLibraryItem(locationPath, anime_id, status = "") {
   }
 }
 
-export async function getMark(user_id, anime_id) {
-  const URL = `${process.env.REACT_APP_API_BASE_URL}/library/${user_id}/${anime_id}`;
+export async function getMark(userId, animeId) {
   try {
-    const response = await axios.get(URL);
-    if (response.data.library !== null) {
+    const response = await libraryApi.getAnimeLibraryById(userId,animeId)
+    if (response.library !== null) {
       const data = {
-        library_id: response.data.library._id,
-        status: response.data.library.status,
-        note: response.data.library.note,
+        library_id: response.library._id,
+        status: response.library.status,
+        note: response.library.note,
       };
       return data;
     }

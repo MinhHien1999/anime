@@ -1,12 +1,12 @@
 import { useContext, useState, createContext } from "react";
-import axios from "axios";
+import authApi from "../api/authApi"
 import Cookies from "js-cookie";
+
 import { useNavigate, useLocation } from "react-router-dom";
 const CryptoJS = require("crypto-js");
 
 const SECRET_KEY = process.env.REACT_APP_SECRET_KEY || "secret-key";
 const USER_NAME_TOKEN = process.env.REACT_APP_JWT_TOKEN || "jwt-token";
-const LOGIN_URL = process.env.REACT_APP_API_LOGIN;
 const USER_TOKEN = process.env.REACT_APP_USER_TOKEN || "user-token";
 
 const AuthContext = createContext();
@@ -27,19 +27,16 @@ function AuthProvider({ children }) {
   };
   const handleLogin = async (value) => {
     try {
-      const response = await axios.post(LOGIN_URL, value, {
-        withCredentials: true,
-        credentials: "same-origin",
-      });
-      if (response.status === 200) {
+      const response = await authApi.login(value)
+      if (response.statusCode === 200) {
         const expires = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-        Cookies.set(USER_NAME_TOKEN, response.data.token, {
+        Cookies.set(USER_NAME_TOKEN, response.token, {
           expires: expires,
         });
-        Cookies.set(USER_TOKEN, response.data._id, {
+        Cookies.set(USER_TOKEN, response._id, {
           expires: expires,
         });
-        setUser(response.data._id);
+        setUser(response._id);
         setIsLoggedIn(true);
         return;
       }

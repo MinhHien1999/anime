@@ -15,7 +15,7 @@
 }
 .header-menu-right {
     display: inline-flex;
-    gap: 10px;
+    gap: 15px;
     list-style-type: none;
     font-weight: bold;
     padding-left: 0;
