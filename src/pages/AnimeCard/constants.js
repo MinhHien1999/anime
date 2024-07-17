@@ -8,3 +8,5 @@ export const SET_FILTER = {
   ova: "ova",
   all: "all"
 }
+export const SET_START_COUNTDOWN = "START_COUNTDOWN";
+export const SET_DECREMENT_COUNTDOWN = "DECREMENT_COUNTDOWN";

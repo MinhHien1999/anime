@@ -5,6 +5,8 @@ import {
   LOAD_MORE_DATA,
   SET_FILTER,
   INIT_SEASON,
+  SET_START_COUNTDOWN,
+  SET_DECREMENT_COUNTDOWN,
 } from "./constants";
 import reducerAnimes from "./reducer";
 import "./style.css";
@@ -22,8 +24,6 @@ function AnimeCard() {
     if (getMonth === 7 || getMonth === 8 || getMonth === 9) return 2;
     if (getMonth === 10 || getMonth === 11 || getMonth === 12) return 3;
   };
-  let indexSeason = useRef(initIndexSeason());
-  let indexYear = useRef(0);
   let currentFilter = useRef("tv");
   const user_id = Cookies.get(process.env.REACT_APP_USER_TOKEN);
   const [seasons, setSeasons] = useState([]);
@@ -32,32 +32,36 @@ function AnimeCard() {
   const [season, setSeason] = useState(INIT_SEASON[initIndexSeason()]);
   const [year, setYear] = useState(new Date().getFullYear());
   const initAnimes = [];
+  const indexYear = useRef(0);
+  useEffect(() => {
+    const getInit = async () => {
+      try {
+        const getYear = new Date().getFullYear();
+        const response = await jikanApi.getSeasons();
+        const dataSeasons = response.data;
+        indexYear.current = dataSeasons.findIndex((season) => {
+          return season.year === getYear;
+        });
+        setSeasons(dataSeasons);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getInit();
+  }, []);
+  let indexSeason = useRef(initIndexSeason());
   const [animes, dispatchAnimes] = useReducer(reducerAnimes, initAnimes);
   const getAllLibrary = async () => {
     let lib = [];
     if (!user_id) return null;
     try {
-      const response = await libraryApi.getAll(user_id, {},"/")
+      const response = await libraryApi.getAll(user_id, {}, "/");
       lib = response.library;
       return lib;
     } catch (error) {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    const getSeasons = async () => {
-      try {
-        const response = await jikanApi.getSeasons();
-        const dataSeasons = response.data
-        setSeasons(dataSeasons);
-        setYear(dataSeasons[0].year);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getSeasons();
-  }, []);
   const getAnimes = async (
     year,
     season,
@@ -67,7 +71,7 @@ function AnimeCard() {
   ) => {
     const lib = await getAllLibrary();
     try {
-      const response = await jikanApi.getAnimes(year, season, page, filter)
+      const response = await jikanApi.getAnimes(year, season, page, filter);
       const data = response.data;
       const TOTAL_PAGES = response.pagination.last_visible_page;
       dispatchAnimes({
@@ -82,8 +86,10 @@ function AnimeCard() {
           filter,
         },
       });
+      dispatchAnimes({ type: SET_START_COUNTDOWN });
     } catch (error) {
-      if (error.response.status === 429) {
+      console.log(error);
+      if (error.response?.status === 429) {
         console.log("Too Many Requests");
         if (error.response.status === 404) {
           console.log("Not Found");
@@ -95,6 +101,28 @@ function AnimeCard() {
     getAnimes(year, season);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, season]);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      for (const id in animes.countdown) {
+        if (animes.countdown[id].remaining > 0) {
+          if (animes.data[id].airing) {
+            const timeElement = document.getElementById(
+              `countdown-${animes.countdown[id].mal_id}`
+            );
+            timeElement.textContent = formatTime(
+              animes.countdown[id].episodeComing,
+              animes.countdown[id].remaining
+            );
+            dispatchAnimes({
+              type: SET_DECREMENT_COUNTDOWN,
+              payload: { id, countdown: animes.countdown[id] },
+            });
+          }
+        }
+      }
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [animes.data, animes.countdown]);
   const showModal = (anime) => {
     setAnime(anime);
     setModal(true);
@@ -105,33 +133,58 @@ function AnimeCard() {
   const handleSeasonPrevious = async () => {
     indexSeason.current--;
     currentFilter.current = SET_FILTER.tv;
+    let yearCurrent = seasons[indexYear.current].year;
+    let currentSeason = seasons[indexYear.current];
     if (indexSeason.current < 0) {
       indexSeason.current = 3;
+      yearCurrent = yearCurrent - 1;
       indexYear.current++;
+      currentSeason = seasons[indexYear.current];
     }
-    let season = seasons[indexYear.current].seasons[indexSeason.current];
-    let year = seasons[indexYear.current].year;
-    await getAnimes(year, season, SET_PREVIOUS);
-    setSeason(seasons[indexYear.current].seasons[indexSeason.current]);
-    setYear(seasons[indexYear.current].year);
+    await getAnimes(
+      yearCurrent,
+      currentSeason.seasons[indexSeason.current],
+      SET_PREVIOUS
+    );
+    setSeason(currentSeason.seasons[indexSeason.current]);
+    setYear(yearCurrent);
   };
 
   const handleSeasonNext = async () => {
     indexSeason.current++;
     currentFilter.current = SET_FILTER.tv;
-    if (indexSeason.current > seasons[indexYear.current].seasons.length - 1) {
-      indexSeason.current = 0;
-      indexYear.current--;
+    let yearCurrent = seasons[indexYear.current].year;
+    let currentSeason = seasons[indexYear.current];
+    if (
+      indexYear.current === 0 &&
+      indexSeason.current > currentSeason.seasons.length - 1
+    ) {
+      indexSeason.current--;
+      return;
+    } else {
+      if (
+        indexYear.current > 0 &&
+        indexSeason.current > currentSeason.seasons.length - 1
+      ) {
+        indexYear.current--;
+        indexSeason.current = 0;
+        yearCurrent = yearCurrent + 1;
+        currentSeason = seasons[indexYear.current];
+      }
+      if (
+        indexYear.current === 0 &&
+        indexSeason.current === currentSeason.seasons.length - 1
+      ) {
+        currentSeason = seasons[indexYear.current];
+      }
+      await getAnimes(
+        yearCurrent,
+        currentSeason.seasons[indexSeason.current],
+        SET_NEXT
+      );
+      setSeason(currentSeason.seasons[indexSeason.current]);
+      setYear(yearCurrent);
     }
-    if (indexYear.current < 0) {
-      indexYear.current = 0;
-      indexSeason.current = seasons[indexYear.current].seasons.length - 1;
-    }
-    let season = seasons[indexYear.current].seasons[indexSeason.current];
-    let year = seasons[indexYear.current].year;
-    await getAnimes(year, season, SET_NEXT);
-    setSeason(seasons[indexYear.current].seasons[indexSeason.current]);
-    setYear(seasons[indexYear.current].year);
   };
   const loadMoreData = async () => {
     let current_page = animes.current_page;
@@ -156,6 +209,18 @@ function AnimeCard() {
       return " " + result.status.toLowerCase();
     }
     return "";
+  };
+  const formatTime = (episodeComing, timeRemaining) => {
+    const secondsRemaining = Math.floor(timeRemaining / 1000);
+    const seconds = Math.floor(((secondsRemaining % 86400) % 3600) % 60);
+    const hours = Math.floor((secondsRemaining % 86400) / 3600);
+    const minutes = Math.floor(((secondsRemaining % 86400) % 3600) / 60);
+    const day = Math.floor(secondsRemaining / 86400);
+    const timeString = `EP${episodeComing} ${day}d 
+                          ${hours.toString().padStart(2, "0")}h 
+                          ${minutes.toString().padStart(2, "0")}m 
+                          ${seconds.toString().padStart(2, "0")}s`;
+    return timeString;
   };
   return (
     <>
@@ -277,7 +342,6 @@ function AnimeCard() {
           </ul>
         </nav>
       </div>
-
       <main className="anime">
         {animes.data &&
           animes.data
@@ -316,7 +380,21 @@ function AnimeCard() {
                       className="anime-card-poster_image"
                       src={anime.images.webp.image_url}
                       alt=""
-                    />
+                    ></img>
+                    {anime.airing === true && anime.type === "TV" ? (
+                      <div className="episode-countdown">
+                        <time
+                          dateTime={`${anime.aired.prop.from.year}-${
+                            anime.aired.prop.from.month
+                          }-${anime.aired.prop.from.day
+                            .toString()
+                            .padStart(2, "0")}T00:00:00+07:00`}
+                          id={`countdown-${anime.mal_id}`}
+                        ></time>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
                   </div>
 
                   <div className="anime-card-info text">

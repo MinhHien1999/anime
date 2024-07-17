@@ -79,7 +79,7 @@ transform: rotate(135deg);
     height: 100%;
     margin: 0;
     font-size: 0.8rem;
-    text-overflow: ellipsis; /* Add ellipsis for truncated text */
+    text-overflow: ellipsis;
 }
 .anime-card_title a {
     text-decoration: none;
@@ -100,9 +100,16 @@ transform: rotate(135deg);
 }
 .anime-card-poster, .anime-card-poster_image {
     border-radius: 5px;
-    /* width: 177px; */
+    width: 192px;
     height: 100%;
     float: left;
+}
+.episode-countdown {
+    background-color: rgba(66, 66, 61, 0.5);
+    width: 192px;
+    position: absolute;
+    color: rgb(234, 238, 12);
+    font-weight: bold;
 }
 .anime-card-info {
     display: flex;
@@ -138,4 +145,15 @@ ul.anime-card-info_studios{
 .anime-card-info_synopsis p {
     margin: 0;    
     max-height: 100%;
+}
+
+@media only screen and (max-width: 739px) {
+    .anime{
+        grid-template-columns: 1fr;
+    }
+}
+@media only screen and (min-width: 740px) and (max-width: 1023px) {
+    .anime {
+        grid-template-columns: 1fr 1fr;
+    }
 }
