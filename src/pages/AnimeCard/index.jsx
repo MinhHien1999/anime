@@ -105,7 +105,7 @@ function AnimeCard() {
     const intervalId = setInterval(() => {
       for (const id in animes.countdown) {
         if (animes.countdown[id].remaining > 0) {
-          if (animes.data[id].airing) {
+          if (animes.countdown[id].airing) {
             const timeElement = document.getElementById(
               `countdown-${animes.countdown[id].mal_id}`
             );
@@ -113,6 +113,9 @@ function AnimeCard() {
               animes.countdown[id].episodeComing,
               animes.countdown[id].remaining
             );
+            if(typeof animes.data[id].episodes === 'number' && animes.data[id].episodes <= animes.countdown[id].episodeComing){
+              animes.countdown[id].airing = false
+            }
             dispatchAnimes({
               type: SET_DECREMENT_COUNTDOWN,
               payload: { id, countdown: animes.countdown[id] },
@@ -381,7 +384,7 @@ function AnimeCard() {
                       src={anime.images.webp.image_url}
                       alt=""
                     ></img>
-                    {anime.airing === true && anime.type === "TV" ? (
+                    { anime.airing === true && anime.type === "TV" ? (
                       <div className="episode-countdown">
                         <time
                           dateTime={`${anime.aired.prop.from.year}-${

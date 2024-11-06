@@ -21,51 +21,54 @@ const filterDuplicate = (dataAnimes) => {
   return data;
 };
 const filterSeasonData = (dataAnimes, season) => {
-  const result = dataAnimes.filter(
-    (anime) =>
+  const result = dataAnimes.filter((anime) => {
+    return (
       anime.season === season ||
       (anime.season !== season && anime.airing === true)
-  );
+    );
+  });
   return result;
 };
-  const Broadcast = (mal_id, episodes, dates, time, type) => {
-    let episodeComing = 1;
-    const WEEK = 604800000;
-    let milisecondsRemaining = WEEK;
-    const now = new Date();
-    const vietnamDate = new Date(now.getTime()) //GMT+7
-    const dateString = `${
-      dates.year +
-      "-" +
-      dates.month.toString().padStart(2, "0") +
-      "-" +
-      dates.day.toString().padStart(2, "0") +
-      `T${time}:00+09:00`
-    }`;
-    const dateBroadcast = Date.parse(dateString); //milliseconds, ngay dau tien khoi chieu GMT+9
-    const remainingTime = new Date(
-      vietnamDate.getTime() - dateBroadcast
-    ).getTime(); //tgian từ ngày khởi chiếu đến ngày hiện tại, miliseconds
-    const pastSeconds = Math.floor(remainingTime / 1000);
-    const pastWeeks = Math.floor(pastSeconds / 604800); //604800s = 1 week
-    let newDateBroadcast = new Date(
-      dateBroadcast + WEEK * (pastWeeks + 1)
-    ).getTime(); // ngay chieu ep moi nhat, miliseconds
-    episodeComing += pastWeeks + 1;
-    milisecondsRemaining = newDateBroadcast - vietnamDate;
-    if(type !== "TV") {
-        episodeComing = 0
-        milisecondsRemaining = 0
-    }
-    const countdown = {
-      mal_id,
-      episodeComing,
-      milisecondsRemaining,
-    };
-    return countdown;
+const Broadcast = (mal_id, episodes, dates, time, type, airing) => {
+  let episodeComing = 1;
+  const WEEK = 604800000;
+  let milisecondsRemaining = WEEK;
+  const now = new Date();
+  const vietnamDate = new Date(now.getTime()); //GMT+7
+  const dateString = `${
+    dates.year +
+    "-" +
+    dates.month.toString().padStart(2, "0") +
+    "-" +
+    dates.day.toString().padStart(2, "0") +
+    `T${time}:00+09:00`
+  }`;
+  const dateBroadcast = Date.parse(dateString); //milliseconds, ngay dau tien khoi chieu GMT+9
+  const remainingTime = new Date(
+    vietnamDate.getTime() - dateBroadcast
+  ).getTime(); //tgian từ ngày khởi chiếu đến ngày hiện tại, miliseconds
+  const pastSeconds = Math.floor(remainingTime / 1000);
+  const pastWeeks = Math.floor(pastSeconds / 604800); //604800s = 1 week
+  let newDateBroadcast = new Date(
+    dateBroadcast + WEEK * (pastWeeks + 1)
+  ).getTime(); // ngay chieu ep moi nhat, miliseconds
+  episodeComing += pastWeeks + 1;
+  milisecondsRemaining = newDateBroadcast - vietnamDate;
+  if (type !== "TV" || isNaN(episodeComing) || isNaN(milisecondsRemaining)) {
+    episodeComing = 0;
+    milisecondsRemaining = 0;
+  }
+
+  const countdown = {
+    mal_id,
+    episodeComing,
+    milisecondsRemaining,
+    airing,
   };
+  return countdown;
+};
 const handleBroadcast = (dataAnimes) => {
-  const broadcast = []
+  const broadcast = [];
   dataAnimes.map((anime) => {
     broadcast.push(
       Broadcast(
@@ -74,11 +77,12 @@ const handleBroadcast = (dataAnimes) => {
         anime.aired.prop.from,
         anime.broadcast.time,
         anime.type,
+        anime.airing
       )
     );
-  })
+  });
   return broadcast;
-}
+};
 const reducerAnimes = (state, action) => {
   let newState;
   switch (action.type) {
@@ -197,6 +201,7 @@ const reducerAnimes = (state, action) => {
             mal_id: item.mal_id,
             episodeComing: item.countdown.episodeComing,
             remaining: item.countdown.milisecondsRemaining,
+            airing: state.data[index].episodes !== null && state.data[index].episodes <= item.countdown.episodeComing ? false : item.countdown.airing
           };
           return acc;
         }, {});
@@ -209,6 +214,7 @@ const reducerAnimes = (state, action) => {
     case SET_DECREMENT_COUNTDOWN:
       {
         let newCountdown = {};
+        // console.log(action.payload)
         const timeRemaining = action.payload.countdown.remaining;
         const secondsRemaining = Math.floor(timeRemaining / 1000);
         const seconds = Math.floor(((secondsRemaining % 86400) % 3600) % 60);
@@ -221,6 +227,7 @@ const reducerAnimes = (state, action) => {
             mal_id: action.payload.countdown.mal_id,
             episodeComing: action.payload.countdown.episodeComing,
             remaining: action.payload.countdown.remaining - 1000,
+            airing: action.payload.countdown.airing,
           },
         };
         if (day === 0 && hours === 0 && minutes === 0 && seconds === 0) {
